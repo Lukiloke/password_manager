@@ -52,20 +52,28 @@ def clear_file():
     data.truncate(0)
 
 def add_password():
+    with open(filename,'rb') as f_read:
+        o_data= f_read.read()
     domain = input("App/Site:   ")
     login_details = input("Login Id:    ")
     password = input("Password:     ")
     additionals = input("Additionals? Y/n :     ")
-    additional_data = ""
     if additionals == "Y":
-        additional_data == input("Enter Additional infos you want to add with this site:   ")
+        additional_data = input("Enter Additional infos you want to add with this site:   ")
     else:
-        pass
-    to_write = "\n"+ domain + "   " + login_details + "   " + password + "   " + additional_data
-    to_write = to_write.encode('utf-8')
-    with open(filename, 'ab') as file:
+        additional_data = ""
+
+    if o_data:
+        o_file_decrypted_bytes = f.decrypt(o_data)
+        o_file_decrypted = o_file_decrypted_bytes.decode('utf-8')
+    else:
+        o_file_decrypted = ""
+
+    new_entry =  "\n"+ domain + "   " + login_details + "   " + password + "   " + additional_data
+
+    to_write = (o_file_decrypted + new_entry).encode('utf-8')
+    with open(filename, 'wb') as file:
         file.write(f.encrypt(to_write))
-        file.close()
     
 
 clear_history()
