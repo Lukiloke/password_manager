@@ -74,7 +74,29 @@ def add_password():
     to_write = (o_file_decrypted + new_entry).encode('utf-8')
     with open(filename, 'wb') as file:
         file.write(f.encrypt(to_write))
-    
+
+
+def search(item):
+    main_list = []
+    with open(filename,'rb') as file:
+        file_content_search = file.read()
+        decrypted_data_search = f.decrypt(file_content_search).decode('utf-8')
+        lines_list = decrypted_data_search.splitlines()
+        a = 0
+        
+        for i in lines_list :
+            if item.lower() in i.lower() :
+                print(i)
+                a = 1
+
+        if a == 0:
+            clear_history()
+            print("Item Not Found...")
+            
+            
+            
+            
+
 
 clear_history()
 key = (converting_password(input("Enter password (note that if you try decrypting using a wrong password the program may crash) :    ")))
@@ -89,7 +111,7 @@ with open(path, 'a+') as file:
 filename = path
 option_loop = 0
 while option_loop == 0:
-    options = input( "Here are the available command :\n$ encrypt\n$ decrypt\n$ decrypt_vmode\n$ add_password\n$ file_content\n$ write_file\n$ clear_file\n$ exit\n\n      $ ")
+    options = input( "Here are the available command :\n$ search\n$ encrypt\n$ decrypt\n$ decrypt_vmode\n$ add_password\n$ file_content\n$ write_file\n$ clear_file\n$ exit\n\n      $ ")
     if options == "encrypt":
         clear_history()
         encrypt_file()
@@ -123,6 +145,13 @@ while option_loop == 0:
 
     elif options == "exit":
         break
+
+    elif options == "":
+        pass
+
+    elif options == "search":
+        clear_history()
+        search(input("Item to search:   "))
         
 
     else:
@@ -131,7 +160,3 @@ while option_loop == 0:
 
     input()
     clear_history()
-
-
-
-
