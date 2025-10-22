@@ -2,6 +2,7 @@ from cryptography.fernet import Fernet
 import hashlib
 import base64
 import os
+main_list = []
 
 def clear_history():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -13,135 +14,101 @@ def converting_password(password: str) -> bytes:
     base64_key = base64.b64encode(hashed_key_digest)
     return base64_key
 
-
-def encrypt_file():
-    original_data = open(filename, "rb").read()
-    encrypted_data = f.encrypt(original_data)
-    deletion = open(filename,'r+')
-    deletion.truncate(0)
-    with open(filename, 'wb') as file:
-        file.write(encrypted_data)
+clear_history()
+key = (converting_password(input("Enter password (note that if you try decrypting using a wrong password the program may crash) :    ")))
+f = Fernet(key)
+filename = r"C:\Users\Antoine\Desktop\VisualStudio\password_manager\test.txt"
+with open(filename, 'a+') as file:
     file.close()
+    pass
 
-def decrypt_file():
-    encrypted_file = open(filename, "rb").read()
-    decrypted_data = f.decrypt(encrypted_file)
-    with open(filename, 'wb') as file:
-        file.write(decrypted_data)
-        file.close()
 
-def decrypt_variable_mode():
-    encrypt_file = open(filename, 'rb').read()
-    decrypted_data_vmode = f.decrypt(encrypt_file)
-    out_vmode = decrypted_data_vmode.decode('utf-8')
-    return out_vmode
-
-def read_file_content():
-    content = open(filename, "rb").read()
-    content = content.decode('utf-8')
-    return content
-
-def write_file():
-    data_w = "\n"+ input('Data to write:  ') 
-    with open(filename,'ab') as file:
-        file.write(data_w.encode('utf-8'))
-        file.close()
-
-def clear_file():
-    data = open(filename, 'rb+')
-    data.truncate(0)
 
 def add_password():
-    with open(filename,'rb') as f_read:
-        o_data= f_read.read()
     domain = input("App/Site:   ")
     login_details = input("Login Id:    ")
     password = input("Password:     ")
     additionals = input("Additionals? Y/n :     ")
     if additionals == "Y":
-        additional_data = input("Enter Additional infos you want to add with this site:   ")
+        additional_data = "   " + input("Enter Additional infos you want to add with this site:   ")
     else:
         additional_data = ""
-
-    if o_data:
-        o_file_decrypted_bytes = f.decrypt(o_data)
-        o_file_decrypted = o_file_decrypted_bytes.decode('utf-8')
-    else:
-        o_file_decrypted = ""
-
-    new_entry =  "\n"+ domain + "   " + login_details + "   " + password + "   " + additional_data
-
-    to_write = (o_file_decrypted + new_entry).encode('utf-8')
-    with open(filename, 'wb') as file:
-        file.write(f.encrypt(to_write))
+    new_entry =   domain +"   " + login_details + "   " + password + additional_data
+    main_list.append(new_entry)
 
 
-def search(item):
-    main_list = []
+def clear_file():
+    data = open(filename, 'rb+')
+    data.truncate(0)
+    
+
+def search(item): #search an item in the main list and show it
     with open(filename,'rb') as file:
-        file_content_search = file.read()
-        decrypted_data_search = f.decrypt(file_content_search).decode('utf-8')
-        lines_list = decrypted_data_search.splitlines()
         a = 0
-        
-        for i in lines_list :
+        for i in main_list :
             if item.lower() in i.lower() :
                 print(i)
+                #print("\nItem position for deletion:   " + str(main_list.index(i)))
+                delete_it = input("\nDelete it   Y/n:   ")
+                if delete_it == "Y":
+                    confirm_deletion = input("Enter Del_Credential to confirm deletion: ")
+                    if confirm_deletion == "Del_Credential":
+                        main_list.pop(main_list.index(i))
+                        print("> Item Deleted !")
+                    else:
+                        pass
+                else:
+                    pass
                 a = 1
-
         if a == 0:
             clear_history()
             print("Item Not Found...")
-            
-            
-            
-            
 
 
-clear_history()
-key = (converting_password(input("Enter password (note that if you try decrypting using a wrong password the program may crash) :    ")))
-clear_history()
-f = Fernet(key)
-path= str(os.path.join(os.path.expanduser('~'), 'Documents'))+ r'\Manager.txt'
-with open(path, 'a+') as file:
-    file.close()
-    pass
- 
+def all_content(): #shows every credentials saved in the file
+    file_content = '\n'.join(main_list)
+    print(file_content)
 
-filename = path
+def debug():
+    debug_options = input("Available options:\n$ clear_file\n\n      $ ")
+    if debug_options == "clear_file":
+        clear_file()
+        main_list.clear()
+        clear_history()
+        print(">     File size set to 0 ")
+
+
+
+with open(filename, "rb") as file :   #So yeah, this just store file content in a list
+    o_data = file.read()
+    if o_data:
+        decrypted_file_content = f.decrypt(o_data).decode('utf-8')
+        main_list = decrypted_file_content.splitlines()
+    else:
+        o_data = ''
+
+    main_list = [item.replace('\n', '') for item in main_list]
+
 option_loop = 0
 while option_loop == 0:
-    options = input( "Here are the available command :\n$ search\n$ encrypt\n$ decrypt\n$ decrypt_vmode\n$ add_password\n$ file_content\n$ write_file\n$ clear_file\n$ exit\n\n      $ ")
-    if options == "encrypt":
-        clear_history()
-        encrypt_file()
-        print(">     File successfully encrypted !")
+    options = input( "Here are the available command :\n$ list_all\n$ add_password\n$ clear_file\n$ search & delete\n$ debug\n$ exit\n\n      $ ")
 
-    elif options == "decrypt_vmode":
-        clear_history()
-        print(">     "+decrypt_variable_mode())
-
-    elif options == "decrypt":
-        clear_history()
-        decrypt_file()
-        print(">     File successfully decrypted !")
-
-    elif options == "file_content":
-        clear_history()
-        print('>     '+read_file_content())
-        
-    elif options == "write_file":
-        clear_history()
-        write_file()
-
-    elif options == "clear_file":
+    if options == "clear_file":
         clear_history()
         clear_file()
         print(">     File size set to 0 ")
 
+    elif options == "list_all":
+        clear_history()
+        all_content()
+
     elif options == "add_password":
         clear_history()
         add_password()
+
+    elif options == "debug":
+        clear_history()
+        debug()
 
     elif options == "exit":
         break
@@ -152,7 +119,6 @@ while option_loop == 0:
     elif options == "search":
         clear_history()
         search(input("Item to search:   "))
-        
 
     else:
         clear_history()
@@ -160,3 +126,11 @@ while option_loop == 0:
 
     input()
     clear_history()
+
+deletion = open(filename, 'rb+')
+deletion.truncate(0)
+
+with open(filename, 'wb') as file:
+    to_write = '\n'.join(main_list).encode('utf-8')
+    to_write_encoded = f.encrypt(to_write)
+    file.write(to_write_encoded)
