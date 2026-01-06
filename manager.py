@@ -17,7 +17,7 @@ def converting_password(password: str) -> bytes:
 clear_history()
 key = (converting_password(input("Enter password (note that if you try decrypting using a wrong password the program may crash) :    ")))
 f = Fernet(key)
-filename = r"C:\Users\Antoine\Desktop\VisualStudio\password_manager\test.txt"
+filename = r"C:\Users\User\Desktop\VisualStudio\password_manager\test.txt"
 with open(filename, 'a+') as file:
     file.close()
     pass
