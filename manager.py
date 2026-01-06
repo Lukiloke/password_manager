@@ -17,7 +17,7 @@ def converting_password(password: str) -> bytes:
 clear_history()
 key = (converting_password(input("Enter password (note that if you try decrypting using a wrong password the program may crash) :    ")))
 f = Fernet(key)
-filename = r"C:\Users\User\Desktop\VisualStudio\password_manager\test.txt"
+filename = str(os.path.join(os.path.expanduser('~'), 'Documents'))+ r'\PasswordManagerFile.txt'
 with open(filename, 'a+') as file:
     file.close()
     pass
@@ -51,6 +51,7 @@ def search(item): #search an item in the main list and show it
                 #print("\nItem position for deletion:   " + str(main_list.index(i)))
                 delete_it = input("\nDelete it   Y/n:   ")
                 if delete_it == "Y":
+                    clear_history()
                     confirm_deletion = input("Enter Del_Credential to confirm deletion: ")
                     if confirm_deletion == "Del_Credential":
                         main_list.pop(main_list.index(i))
@@ -90,15 +91,11 @@ with open(filename, "rb") as file :   #So yeah, this just store file content in 
     main_list = [item.replace('\n', '') for item in main_list]
 
 option_loop = 0
+clear_history()
 while option_loop == 0:
     options = input( "Here are the available command :\n$ list_all\n$ add_password\n$ clear_file\n$ search & delete\n$ debug\n$ exit\n\n      $ ")
 
-    if options == "clear_file":
-        clear_history()
-        clear_file()
-        print(">     File size set to 0 ")
-
-    elif options == "list_all":
+    if options == "list_all":
         clear_history()
         all_content()
 
@@ -109,6 +106,12 @@ while option_loop == 0:
     elif options == "debug":
         clear_history()
         debug()
+    
+    elif options == "clear_file":
+        clear_history()
+        clear_file()
+        print("File successfully cleared.")
+
 
     elif options == "exit":
         break
@@ -116,7 +119,7 @@ while option_loop == 0:
     elif options == "":
         pass
 
-    elif options == "search":
+    elif options == "search & delete":
         clear_history()
         search(input("Item to search:   "))
 
